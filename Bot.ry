@@ -1,0 +1,36 @@
+import os
+from telegram import Update
+from telegram.ext import Application, MessageHandler, ContextTypes, filters
+
+TOKEN = os.environ["BOT_TOKEN"]
+
+WELCOME = """👋 Добро пожаловать в обсуждение!
+
+💬 Здесь можно задавать вопросы и делиться своим мнением.
+
+🤝 Пожалуйста, уважайте других участников. С любовью Макс и Жека❤️
+"""
+
+async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.effective_message
+
+    if not message:
+        return
+
+    # Реагируем только на автоматические сообщения
+    # из канала в группе обсуждений.
+    if not message.is_automatic_forward:
+        return
+
+    await message.reply_text(
+        WELCOME,
+        disable_notification=True
+    )
+
+app = Application.builder().token(TOKEN).build()
+
+app.add_handler(
+    MessageHandler(filters.ALL, welcome)
+)
+
+app.run_polling()
